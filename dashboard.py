@@ -1,4 +1,3 @@
-
 import tkinter as tk
 from tkinter import ttk
 import yfinance as yf
@@ -24,12 +23,33 @@ def display_stock_charts():
     label_output.config(text=output)
 
 def add_stock():
-    symbol = entry_stock.get().upper()
+    symbol = entry_stock.get().upper()[:4]  # Limit to maximum 4 characters
     entry_stock.delete(0, tk.END)  # Clear the entry field
 
-    # Create a new label for the stock name
-    stock_name_label = ttk.Label(stock_frame, text=symbol)
-    stock_name_label.pack(side=tk.TOP, pady=5)
+    if symbol:
+        # Check if the stock is already present in the stock list
+        stocks = [child.winfo_children()[0].cget("text") for child in stock_frame.winfo_children()]
+        if symbol in stocks:
+            return  # Do not add repeated stocks
+
+        # Create a new label for the stock name and the remove button
+        stock_entry_frame = ttk.Frame(stock_frame)
+        stock_entry_frame.pack(side=tk.TOP, pady=5)
+
+        stock_name_label = ttk.Label(stock_entry_frame, text=symbol)
+        stock_name_label.pack(side=tk.LEFT)
+
+        remove_button = ttk.Button(stock_entry_frame, text="Remove", command=lambda: remove_stock(stock_entry_frame))
+        remove_button.pack(side=tk.LEFT, padx=5)
+        
+def remove_stock(stock_entry_frame):
+    stock_entry_frame.destroy()
+
+def validate_input(*args):
+    if entry_stock.get().strip():
+        button_add_stock.config(state=tk.NORMAL)
+    else:
+        button_add_stock.config(state=tk.DISABLED)
 
 # Create the main window
 window = tk.Tk()
@@ -58,8 +78,10 @@ entry_stock = ttk.Entry(input_frame, width=15)  # Adjust the width as needed
 entry_stock.pack(padx=10, pady=10)
 
 # Create button to add stocks
-button_add_stock = ttk.Button(input_frame, text="Add Stock", command=add_stock, width=15)  # Adjust the width as needed
+button_add_stock = ttk.Button(input_frame, text="Add Stock", command=add_stock, width=15, state=tk.DISABLED)  # Adjust the width as needed
 button_add_stock.pack(padx=10, pady=10)
+
+entry_stock.bind("<KeyRelease>", validate_input)  # Bind the validation function to the entry field
 
 # Create a frame to hold stock data labels
 stock_frame = ttk.Frame(window)
@@ -69,4 +91,15 @@ stock_frame.grid(row=2, column=0, padx=10, pady=10, sticky="w")
 label_output = ttk.Label(window, wraplength=500)
 label_output.grid(row=3, column=0, columnspan=5, padx=10, pady=10, sticky="w")
 
+
+
+
+
+
+
+
+
+
+
 window.mainloop()
+
