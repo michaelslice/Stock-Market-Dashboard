@@ -32,16 +32,37 @@ def add_stock():
         if symbol in stocks:
             return  # Do not add repeated stocks
 
-        # Create a new label for the stock name and the remove button
+        # Create a new frame for the stock entry
         stock_entry_frame = ttk.Frame(stock_frame)
         stock_entry_frame.pack(side=tk.TOP, pady=5)
 
+        # Create a label for the stock name
         stock_name_label = ttk.Label(stock_entry_frame, text=symbol)
         stock_name_label.pack(side=tk.LEFT)
 
+        # Create the "Remove" button
         remove_button = ttk.Button(stock_entry_frame, text="Remove", command=lambda: remove_stock(stock_entry_frame))
         remove_button.pack(side=tk.LEFT, padx=5)
-        
+
+        # Create the "Details" button
+        details_button = ttk.Button(stock_entry_frame, text="Details", command=lambda s=symbol, f=stock_entry_frame: display_details(s, f))
+        details_button.pack(side=tk.LEFT, padx=5)
+
+def display_details(symbol, stock_entry_frame):
+    # Retrieve stock information using yfinance
+    stock_data = yf.download(symbol, period='1d')
+
+    # Create a new frame for displaying the stock data
+    details_frame = ttk.Frame(stock_entry_frame)
+    details_frame.pack(side=tk.LEFT, padx=5)
+
+    # Create labels to display the stock data horizontally
+    for key, value in stock_data.iloc[0].items():
+        if key in ['Open', 'High', 'Low', 'Close', 'Adj Close']:
+            value = round(value, 2)
+        stock_label = ttk.Label(details_frame, text=f"{key}: {value}", width=20)
+        stock_label.pack(side=tk.LEFT, padx=5)
+
 def remove_stock(stock_entry_frame):
     stock_entry_frame.destroy()
 
@@ -91,15 +112,4 @@ stock_frame.grid(row=2, column=0, padx=10, pady=10, sticky="w")
 label_output = ttk.Label(window, wraplength=500)
 label_output.grid(row=3, column=0, columnspan=5, padx=10, pady=10, sticky="w")
 
-
-
-
-
-
-
-
-
-
-
 window.mainloop()
-
