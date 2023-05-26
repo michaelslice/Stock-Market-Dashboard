@@ -1,3 +1,6 @@
+
+
+# GOOD CODE THAT PRINTS EVEN
 import tkinter as tk
 from tkinter import ttk
 import yfinance as yf
@@ -29,37 +32,33 @@ def open_settings_file():
     os.system("settings.py")  # Replace "notepad.exe" with the appropriate program for your file type
 
 def add_stock():
-    symbol = entry_stock.get().upper()[:4]  # Limit to maximum 4 characters
+    stocks_input = entry_stock.get()  # Get the input stocks
     entry_stock.delete(0, tk.END)  # Clear the entry field
 
-    if symbol:
-        # Check if the stock is already present in the stock list
-        stocks = [child.winfo_children()[0].cget("text") for child in stock_frame.winfo_children()]
-        if symbol in stocks:
-            return  # Do not add repeated stocks
+    if stocks_input:
+        stocks_list = stocks_input.upper().split()  # Split the input stocks into a list
 
-        # Create a new frame for the stock entry
-        stock_entry_frame = ttk.Frame(stock_frame)
-        stock_entry_frame.pack(side=tk.TOP, pady=5)
+        # Filter out only the label widgets from the children of stock_frame
+        stocks = [child.cget("text") for child in stock_frame.winfo_children() if isinstance(child, ttk.Label)]
 
-        # Create a label for the stock name
-        stock_name_label = ttk.Label(stock_entry_frame, text=symbol)
-        stock_name_label.pack(side=tk.LEFT)
+        for symbol in stocks_list:
+            symbol = symbol[:4]  # Limit to maximum 4 characters
 
-        # Create the "Remove" button
-        remove_button = ttk.Button(stock_entry_frame, text="Remove", command=lambda: remove_stock(stock_entry_frame))
-        remove_button.pack(side=tk.LEFT, padx=5)
+            if symbol in stocks:
+                continue  # Skip adding repeated stocks
 
-        # Create the "Details" button
-        details_button = ttk.Button(stock_entry_frame, text="Details")
-        details_button.pack(side=tk.LEFT, padx=5)
+            row_index = len(stocks)  # Get the row index for the new entry
 
-        # Set the column to zero for all widgets in stock_entry_frame
-        for child in stock_entry_frame.winfo_children():
-            child.pack(side=tk.LEFT)
+            stock_name_label = ttk.Label(stock_frame, text=symbol)
+            stock_name_label.grid(row=row_index, column=0, padx=5)
 
-        # Increment the row index for the next stock entry
-        stock_frame.grid_rowconfigure(stock_frame.grid_size()[1] + 1, weight=1)
+            remove_button = ttk.Button(stock_frame, text="Remove", command=lambda sym=symbol: remove_stock(sym))
+            remove_button.grid(row=row_index, column=1, padx=5)
+
+            details_button = ttk.Button(stock_frame, text="Details")
+            details_button.grid(row=row_index, column=2, padx=5)
+
+            stocks.append(symbol)  # Add the new stock to the stocks list
 
 def remove_stock(stock_entry_frame):
     stock_entry_frame.destroy()
