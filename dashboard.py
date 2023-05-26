@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 import yfinance as yf
 import os
+from tkinter import messagebox
 
 def display_stock_prices():
     output = "Displaying stock prices..."
@@ -29,6 +30,8 @@ def open_settings_file():
     # Open the settings file
     os.system("settings.py")  # Replace "notepad.exe" with the appropriate program for your file type
 
+import yfinance as yf
+
 def add_stock():
     stocks_input = entry_stock.get()  # Get the input stocks
     entry_stock.delete(0, tk.END)  # Clear the entry field
@@ -42,6 +45,12 @@ def add_stock():
             if symbol in [child.cget("text") for child in stock_frame.winfo_children() if isinstance(child, ttk.Label)]:
                 continue  # Skip adding repeated stocks
 
+            # Check if the stock symbol is valid
+            stock = yf.Ticker(symbol)
+            if not stock.info:
+                messagebox.showerror("Error", "Invalid stock symbol: " + symbol)
+                continue
+
             row_index = len(stock_frame.grid_slaves())  # Get the row index for the new entry
 
             stock_name_label = ttk.Label(stock_frame, text=symbol)
@@ -52,6 +61,20 @@ def add_stock():
 
             details_button = ttk.Button(stock_frame, text="Details")
             details_button.grid(row=row_index, column=2, padx=5)
+
+
+def remove_stock_details(symbol, row):
+    # Remove stock name, details button, and remove button for the specified row
+    for child in stock_frame.grid_slaves():
+        if child.grid_info()["row"] == row:
+            child.grid_forget()
+
+
+def validate_input(*args):
+    if entry_stock.get().strip():
+        button_add_stock.config(state=tk.NORMAL)
+    else:
+        button_add_stock.config(state=tk.DISABLED)
 
 
 def remove_stock_details(symbol, row):
