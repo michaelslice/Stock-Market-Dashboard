@@ -1,5 +1,3 @@
-
-
 # GOOD CODE THAT PRINTS EVEN
 import tkinter as tk
 from tkinter import ttk
@@ -38,36 +36,37 @@ def add_stock():
     if stocks_input:
         stocks_list = stocks_input.upper().split()  # Split the input stocks into a list
 
-        # Filter out only the label widgets from the children of stock_frame
-        stocks = [child.cget("text") for child in stock_frame.winfo_children() if isinstance(child, ttk.Label)]
-
         for symbol in stocks_list:
             symbol = symbol[:4]  # Limit to maximum 4 characters
 
-            if symbol in stocks:
+            if symbol in [child.cget("text") for child in stock_frame.winfo_children() if isinstance(child, ttk.Label)]:
                 continue  # Skip adding repeated stocks
 
-            row_index = len(stocks)  # Get the row index for the new entry
+            row_index = len(stock_frame.grid_slaves())  # Get the row index for the new entry
 
             stock_name_label = ttk.Label(stock_frame, text=symbol)
             stock_name_label.grid(row=row_index, column=0, padx=5)
 
-            remove_button = ttk.Button(stock_frame, text="Remove", command=lambda sym=symbol: remove_stock(sym))
+            remove_button = ttk.Button(stock_frame, text="Remove", command=lambda sym=symbol, row=row_index: remove_stock_details(sym, row_index))
             remove_button.grid(row=row_index, column=1, padx=5)
 
             details_button = ttk.Button(stock_frame, text="Details")
             details_button.grid(row=row_index, column=2, padx=5)
 
-            stocks.append(symbol)  # Add the new stock to the stocks list
 
-def remove_stock(stock_entry_frame):
-    stock_entry_frame.destroy()
+def remove_stock_details(symbol, row):
+    # Remove stock name, details button, and remove button for the specified row
+    for child in stock_frame.grid_slaves():
+        if child.grid_info()["row"] == row:
+            child.grid_forget()
+
 
 def validate_input(*args):
     if entry_stock.get().strip():
         button_add_stock.config(state=tk.NORMAL)
     else:
         button_add_stock.config(state=tk.DISABLED)
+
 
 # Create the main window
 window = tk.Tk()
