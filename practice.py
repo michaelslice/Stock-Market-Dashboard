@@ -5,33 +5,32 @@ import yfinance as yf
 import os
 from tkinter import messagebox
 
+import stockprices
+import stockcharts
+import screener
+import options
+import company
 
 def display_stock_prices():
-    output = "Displaying stock prices..."
-    label_output.config(text=output)
-
-def display_option_prices():
-    output = "Displaying option prices..."
-    label_output.config(text=output)
-
+    stockprices.display_stock_prices(window)
+    
 def display_screener():
-    output = "Displaying screener..."
-    label_output.config(text=output)
-
-def display_company_data():
-    output = "Displaying company data..."
-    label_output.config(text=output)
+    screener.display_screener(window)
 
 def display_stock_charts():
-    output = "Displaying stock charts..."
-    label_output.config(text=output)
+    stockcharts.display_stock_charts(window)
+
+def display_company_data():
+    company.display_company_data(window)
+
+def display_option_prices():
+    options.display_option_prices(window)
 
 # Function to open the settings file
 def open_settings_file():
     # Open the settings file
-    os.system("settings.py")  # Replace "notepad.exe" with the appropriate program for your file type
-
-import yfinance as yf
+    os.system("settings.py")  
+    
 
 def add_stock():
     stocks_input = entry_stock.get()  # Get the input stocks
@@ -77,22 +76,6 @@ def validate_input(*args):
     else:
         button_add_stock.config(state=tk.DISABLED)
 
-
-
-def remove_stock_details(symbol, row):
-    # Remove stock name, details button, and remove button for the specified row
-    for child in stock_frame.grid_slaves():
-        if child.grid_info()["row"] == row:
-            child.grid_forget()
-
-
-def validate_input(*args):
-    if entry_stock.get().strip():
-        button_add_stock.config(state=tk.NORMAL)
-    else:
-        button_add_stock.config(state=tk.DISABLED)
-
-
 # Create the main window
 window = tk.Tk()
 window.title("Stock Tracker")
@@ -104,17 +87,19 @@ button_screener = ttk.Button(window, text="Screener", command=display_screener)
 button_company_data = ttk.Button(window, text="Company Data", command=display_company_data)
 button_stock_charts = ttk.Button(window, text="Stock Charts", command=display_stock_charts)
 button_settings = ttk.Button(window, text="!", command=open_settings_file)
+button_save = ttk.Button(window, text="*", command=open_settings_file)
 
 # Assign buttons to the same sizing group
 window.grid_columnconfigure((0, 1, 2, 3, 4), weight=1, uniform="equal")
 
 # Place buttons in the window using grid layout
 button_stock_prices.grid(row=0, column=0, padx=10, pady=10, sticky="we")
-button_option_prices.grid(row=0, column=1, padx=10, pady=10, sticky="we")
-button_screener.grid(row=0, column=2, padx=10, pady=10, sticky="we")
+button_screener.grid(row=0, column=1, padx=10, pady=10, sticky="we")
+button_stock_charts.grid(row=0, column=2, padx=10, pady=10, sticky="we")
 button_company_data.grid(row=0, column=3, padx=10, pady=10, sticky="we")
-button_stock_charts.grid(row=0, column=4, padx=10, pady=10, sticky="we")
+button_option_prices.grid(row=0, column=4, padx=10, pady=10, sticky="we")
 button_settings.place(relx=1.0, rely=1.0, anchor='se', x=-10, y=-10, width=30, height=30)
+button_save.place(relx=1.0, rely=1.0, anchor='se', x=-40, y=-10, width=30, height=30)
 
 # Create a frame to hold the input elements
 input_frame = ttk.Frame(window)
