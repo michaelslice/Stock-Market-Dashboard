@@ -1,11 +1,5 @@
 
-import tkinter as tk
-
-root = tk.Tk()
-
-root.geometry("800x500")
-
-root.mainloop()
+'''
 
 
 
@@ -37,5 +31,12 @@ df = pd.DataFrame(data, index=tickers, columns=columns)
 
 print(df)
 
+'''
 
+import yfinance as yf
 
+ticker = yf.Ticker("AAPL")
+option_chain = ticker.option_chain('2023-06-16').calls
+
+# Print the option quotes
+print(option_chain.head())
