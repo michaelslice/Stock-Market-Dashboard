@@ -1,5 +1,4 @@
-
-#BUTTONS STAY THE SAME AND CODE IS OK
+#INTERTINRG CODE
 import tkinter as tk
 from tkinter import ttk
 import yfinance as yf
@@ -57,8 +56,6 @@ class OptionWindow(tk.Toplevel):
         strike_price_label = ttk.Label(strike_price_frame, text="Strike Price:")
         strike_price_label.grid(row=0, column=0, padx=5, sticky="we")
         
-
-
         # Create and position the input box for strike price
         self.strike_price_entry = ttk.Entry(strike_price_frame, width=10)
         self.strike_price_entry.grid(row=0, column=1, sticky="we")
@@ -67,7 +64,6 @@ class OptionWindow(tk.Toplevel):
         filter_frame = ttk.Frame(self)
         filter_frame.grid(row=1, column=0, columnspan=4, pady=10, sticky="we")
   
-
         # Create and position the Filter button
         filter_button = ttk.Button(filter_frame, text="Filter", command=self.perform_filter)
         filter_button.pack()
@@ -100,13 +96,10 @@ class OptionWindow(tk.Toplevel):
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure((0, 1, 2, 3), weight=1, uniform="equal")
 
-    
-
         # Configure grid weights to make the table frame expand with the window
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-     
     def perform_filter(self):
         # Get the values from the input fields
         search_term = self.search_entry.get()
@@ -115,24 +108,19 @@ class OptionWindow(tk.Toplevel):
         strike_price = self.strike_price_entry.get()
 
         # Fetch option data using yfinance
-        option_chain = self.get_option_quotes(search_term)
+        option_quotes = self.get_option_quotes(search_term)
 
-        if option_chain is not None:
+        if option_quotes is not None:
             # Clear any previous content from the table frame
             self.tree.delete(*self.tree.get_children())
-            option_chain.drop("contractSymbol", axis=1, inplace=True)
-            option_chain.drop("lastTradeDate", axis=1, inplace=True)
-            option_chain.drop("currency", axis=1, inplace=True)
-            option_chain.drop("inTheMoney", axis=1, inplace=True)
-            option_chain.drop("contractSize", axis=1, inplace=True)
 
             # Filter the option data based on the input values
-            if option_type:
-                option_chain = option_chain[option_chain["Type"] == option_type]
-            if exp_date:
-                option_chain = option_chain[option_chain["Expiration"] == exp_date]
-            if strike_price:
-                option_chain = option_chain[option_chain["Strike"] == float(strike_price)]
+            filtered_quotes = []
+            for quote in option_quotes:
+                if (not option_type or option_type == quote['contractSymbol'][-1]) and \
+                        (not exp_date or exp_date == quote['expiration']) and \
+                        (not strike_price or float(strike_price) == quote['strike']):
+                    filtered_quotes.append(quote)
 
             # Set table columns
             columns = ["Expiration", "Type", "Strike", "Last Price", "Bid", "Ask", "Change", "% Change", "Volume", "Open Interest", "Implied Vol"]
@@ -146,22 +134,70 @@ class OptionWindow(tk.Toplevel):
                 self.tree.heading(col, text=col)
                 self.tree.column(col, width=max_header_width * 5, stretch=0)  # Adjust the column width multiplier as needed
 
-            # Insert option chain data
-            for i, row in option_chain.iterrows():
-                self.tree.insert("", "end", values=row.tolist())
+            # Insert option quotes into the table
+            for quote in filtered_quotes:
+                row_values = [
+                    quote['expiration'],
+                    quote['contractSymbol'][-1],
+                    quote['strike'],
+                    quote['lastPrice'],
+                    quote['bid'],
+                    quote['ask'],
+                    quote['change'],
+                    quote['percentChange'],
+                    quote['volume'],
+                    quote['openInterest'],
+                    quote['impliedVolatility']
+                ]
+                self.tree.insert("", "end", values=row_values)
 
     @staticmethod
     def get_option_quotes(stock_symbol):
         try:
             # Fetch option data using yfinance
             ticker = yf.Ticker(stock_symbol)
-            option_chain = ticker.option_chain()
+            options = ticker.options
 
-            return option_chain.calls if option_chain is not None else None
+            option_quotes = []
+            for exp_date in options:
+                chain = ticker.option_chain(exp_date)
+                if chain is not None:
+                    calls = chain.calls
+                    if not calls.empty:
+                        for _, call in calls.iterrows():
+                            # Retrieve option data and provide default values if a key is missing
+                            expiration = call.get('expiration', '')
+                            contract_symbol = call.get('contractSymbol', '')
+                            strike = call.get('strike', '')
+                            last_price = call.get('lastPrice', '')
+                            bid = call.get('bid', '')
+                            ask = call.get('ask', '')
+                            change = call.get('change', '')
+                            percent_change = call.get('percentChange', '')
+                            volume = call.get('volume', '')
+                            open_interest = call.get('openInterest', '')
+                            implied_volatility = call.get('impliedVolatility', '')
+
+                            # Append option data to the list
+                            option_quotes.append({
+                                'expiration': expiration,
+                                'contractSymbol': contract_symbol,
+                                'strike': strike,
+                                'lastPrice': last_price,
+                                'bid': bid,
+                                'ask': ask,
+                                'change': change,
+                                'percentChange': percent_change,
+                                'volume': volume,
+                                'openInterest': open_interest,
+                                'impliedVolatility': implied_volatility
+                            })
+
+            return option_quotes
         except Exception as e:
             print("Error fetching option data:", str(e))
             return None
 
+
 def display_option_prices(parent):
     option_window = OptionWindow(parent)
-    
