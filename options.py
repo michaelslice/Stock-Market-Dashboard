@@ -69,7 +69,7 @@ class OptionWindow(tk.Toplevel):
 
         # Create a frame for displaying the option pricing table
         self.table_frame = ttk.Frame(self)
-        self.table_frame.grid(row=2, column=0, columnspan=4, padx=(20,10), pady=10, sticky="ew")
+        self.table_frame.grid(row=2, column=0, columnspan=4, padx=(20,20), pady=10, sticky="ew")
 
         # Create the treeview widget for displaying the option pricing table
         columns = ["Expiration", "Type", "Strike", "Last Price", "Bid", "Ask", "Change", "% Change", "Volume", "Open Interest", "Implied Vol"]
@@ -86,10 +86,10 @@ class OptionWindow(tk.Toplevel):
         self.tree.configure(yscrollcommand=tree_scrollbar.set)
 
         # Configure column headers and widths
-        header_widths = [65, 60, 60, 70, 60, 60, 60, 70, 50, 100, 100, 0]   # Set a default width of 80 for each column
+        header_widths = [65, 60, 60, 70, 60, 60, 60, 70, 50, 100, 100]   # Set a default width of 80 for each column
         for col, width in zip(columns, header_widths):
             self.tree.heading(col, text=col)
-            self.tree.column(col, width=width, anchor="center", stretch=False)  # Set stretch=False to disable column resizing
+            self.tree.column(col, width=width, anchor="center", stretch=True)  # Set stretch=False to disable column resizing
 
         # Configure grid weights to make the table frame expand with the window
         self.grid_rowconfigure(2, weight=1)
@@ -127,13 +127,14 @@ class OptionWindow(tk.Toplevel):
             columns = ["Expiration", "Type", "Strike", "Last Price", "Bid", "Ask", "Change", "% Change", "Volume", "Open Interest", "Implied Vol"]
             self.tree["columns"] = columns
 
-            # Calculate the maximum width of the column headers
+           # Calculate the maximum width of the column headers
             max_header_width = max(len(col) for col in columns)
 
             # Configure column headers and widths
             for col in columns:
+                col_width = max(len(col), max_header_width)
                 self.tree.heading(col, text=col)
-                self.tree.column(col, width=max_header_width * 5, stretch=0)  # Adjust the column width multiplier as needed
+                self.tree.column(col, width=col_width * 5, stretch=0)  # Adjust the column width multiplier as needed
 
             # Insert option quotes into the table
             # Insert option quotes into the table
@@ -150,7 +151,8 @@ class OptionWindow(tk.Toplevel):
                     quote['percentChange'],
                     quote['volume'],
                     quote['openInterest'],
-                    quote['impliedVolatility']
+                    round(quote['impliedVolatility'], 2)  # Round impliedVolatility to the hundredths place
+                    
                 ]
                 self.tree.insert("", "end", values=row_values)
 
