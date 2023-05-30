@@ -57,3 +57,15 @@ ops.get_puts("aapl")
 
 
 print(ops.get_puts("aapl"))
+
+
+
+import yfinance as yf
+
+msft = yf.Ticker("MSFT")
+
+
+
+
+msft.cashflow
+print(msft)
