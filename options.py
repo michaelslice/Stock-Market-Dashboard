@@ -1,4 +1,3 @@
-#INTERTINRG CODE
 import tkinter as tk
 from tkinter import ttk
 import yfinance as yf
@@ -117,9 +116,11 @@ class OptionWindow(tk.Toplevel):
             # Filter the option data based on the input values
             filtered_quotes = []
             for quote in option_quotes:
-                if (not option_type or option_type == quote['contractSymbol'][-1]) and \
-                        (not exp_date or exp_date == quote['expiration']) and \
-                        (not strike_price or float(strike_price) == quote['strike']):
+                quote_option_type = quote['contractSymbol'].endswith('C') and 'C'
+                
+                if (not option_type or option_type.upper() == quote_option_type) and \
+                    (not exp_date or exp_date == quote['expiration']) and \
+                    (not strike_price or float(strike_price) == quote['strike']):
                     filtered_quotes.append(quote)
 
             # Set table columns
@@ -135,10 +136,12 @@ class OptionWindow(tk.Toplevel):
                 self.tree.column(col, width=max_header_width * 5, stretch=0)  # Adjust the column width multiplier as needed
 
             # Insert option quotes into the table
+            # Insert option quotes into the table
             for quote in filtered_quotes:
+                quote_option_type = quote['contractSymbol'].endswith('C') and 'C' or 'P'
                 row_values = [
                     quote['expiration'],
-                    quote['contractSymbol'][-1],
+                    quote['contractSymbol'][-9],
                     quote['strike'],
                     quote['lastPrice'],
                     quote['bid'],
@@ -201,3 +204,4 @@ class OptionWindow(tk.Toplevel):
 
 def display_option_prices(parent):
     option_window = OptionWindow(parent)
+    

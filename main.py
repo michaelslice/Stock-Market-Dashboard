@@ -34,8 +34,11 @@ print(df)
 '''
 ''''''
 import yfinance as yf
+from yahoo_fin import options as ops
+
 
 ticker = yf.Ticker("AAPL")
+
 option_chain = ticker.option_chain('2023-06-16').calls
 
 # Print the option quotes
@@ -47,3 +50,10 @@ ticker.options
 
 print(ticker.options)
 
+
+
+ops.get_calls("aapl")
+ops.get_puts("aapl")
+
+
+print(ops.get_puts("aapl"))
