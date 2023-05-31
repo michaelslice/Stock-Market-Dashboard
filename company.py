@@ -1,9 +1,8 @@
 '''
-
-
 import tkinter as tk
 from tkinter import ttk
 import yfinance as yf
+from yahoo_fin import stock_info as si
 
 class CompanyDataWindow(tk.Toplevel):
     def __init__(self, parent):
@@ -43,6 +42,14 @@ class CompanyDataWindow(tk.Toplevel):
         # Create a label widget for displaying dividend data
         self.dividend_label = ttk.Label(self)
         self.dividend_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
+
+        # Create a label widget for displaying stock splits data
+        self.splits_label = ttk.Label(self)
+        self.splits_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
+
+        # Create a label widget for displaying earnings dates
+        self.earnings_label = ttk.Label(self)
+        self.earnings_label.grid(row=4, column=0, padx=10, pady=10, sticky="w")
 
     def add_stock_button_click(self, event):
         self.get_stock_data()
@@ -88,6 +95,50 @@ class CompanyDataWindow(tk.Toplevel):
             dividend_label = ttk.Label(self, text=dividend_data)
             dividend_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
 
+        # Clear the existing stock splits data
+        self.splits_label.config(text="")
+
+        # Fetch stock splits data
+        splits = stock.splits
+        if splits.empty:
+            self.splits_label.config(text="No stock splits data available.")
+        else:
+            splits_data = "Splits: "
+            for date, split in splits.tail(3).items():
+                formatted_date = date.strftime("%Y/%m/%d")
+                split_info = f"{formatted_date}: {split} | "
+                splits_data += split_info
+
+            # Remove the last "| " from the splits_data
+            splits_data = splits_data.rstrip("| ")
+
+            # Create a label for stock splits data
+            splits_label = ttk.Label(self, text=splits_data)
+            splits_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
+
+        # Clear the existing earnings data
+        self.earnings_label.config(text="")
+
+        # Fetch earnings data using yahoo_fin
+        earnings = si.get_earnings(symbol)
+        if earnings.empty:
+            self.earnings_label.config(text="No earnings data available.")
+        else:
+            earnings_data = "Earnings Dates: "
+            for date in earnings.tail(3)['startdatetime']:
+                formatted_date = date.strftime("%Y/%m/%d")
+                earnings_info = f"{formatted_date} | "
+                earnings_data += earnings_info
+
+            # Remove the last "| " from the earnings_data
+            earnings_data = earnings_data.rstrip("| ")
+
+            # Create a label for earnings data
+            earnings_label = ttk.Label(self, text=earnings_data)
+            earnings_label.grid(row=4, column=0, padx=10, pady=10, sticky="w")
+
+
+            
 def display_company_data(parent):
     option_window = CompanyDataWindow(parent)
 
@@ -97,11 +148,12 @@ def display_company_data(parent):
 import tkinter as tk
 from tkinter import ttk
 import yfinance as yf
+from yahoo_fin import stock_info as si
 
 class CompanyDataWindow(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
-        self.title("Option Prices")
+        self.title("Company Data")
 
         # Create a frame for the search input
         search_frame = ttk.Frame(self)
@@ -136,6 +188,14 @@ class CompanyDataWindow(tk.Toplevel):
         # Create a label widget for displaying dividend data
         self.dividend_label = ttk.Label(self)
         self.dividend_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
+
+        # Create a label widget for displaying stock splits data
+        self.splits_label = ttk.Label(self)
+        self.splits_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
+
+        # Create a label widget for displaying earnings dates
+        self.earnings_label = ttk.Label(self)
+        self.earnings_label.grid(row=4, column=0, padx=10, pady=10, sticky="w")
 
     def add_stock_button_click(self, event):
         self.get_stock_data()
@@ -180,6 +240,58 @@ class CompanyDataWindow(tk.Toplevel):
             # Create a label for dividend data
             dividend_label = ttk.Label(self, text=dividend_data)
             dividend_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
+
+        # Clear the existing stock splits data
+        self.splits_label.config(text="")
+
+        # Fetch stock splits data
+        splits = stock.splits
+        if splits.empty:
+            self.splits_label.config(text="No stock splits data available.")
+        else:
+            splits_data = "Splits: "
+            for date, split in splits.tail(3).items():
+                formatted_date = date.strftime("%Y/%m/%d")
+                split_info = f"{formatted_date}: {split} | "
+                splits_data += split_info
+
+            # Remove the last "| " from the splits_data
+            splits_data = splits_data.rstrip("| ")
+
+            # Create a label for stock splits data
+            splits_label = ttk.Label(self, text=splits_data)
+            splits_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
+
+            # Fetch volume data for the user-inputted stock
+        volume_week = info.get('averageVolume10days', 'N/A')
+        volume_month = info.get('averageVolume', 'N/A')
+        volume_year = info.get('averageVolume10days', 'N/A')
+
+        # Create a label for volume data
+        volume_label = ttk.Label(self, text=f"Volume (Week): {volume_week} | Volume (Month): {volume_month} | Volume (Year): {volume_year}")
+        volume_label.grid(row=4, column=0, padx=10, pady=10, sticky="w")
+
+
+        # Clear the existing earnings data
+        self.earnings_label.config(text="")
+
+        # Fetch earnings data using yahoo_fin
+        earnings = si.get_earnings(symbol)
+        if earnings.empty:
+            self.earnings_label.config(text="No earnings data available.")
+        else:
+            earnings_data = "Earnings Dates: "
+            for date in earnings.tail(3)['startdatetime']:
+                formatted_date = date.strftime("%Y/%m/%d")
+                earnings_info = f"{formatted_date} | "
+                earnings_data += earnings_info
+
+            # Remove the last "| " from the earnings_data
+            earnings_data = earnings_data.rstrip("| ")
+
+            # Create a label for earnings data
+            earnings_label = ttk.Label(self, text=earnings_data)
+            earnings_label.grid(row=4, column=0, padx=10, pady=10, sticky="w")
 
 def display_company_data(parent):
     option_window = CompanyDataWindow(parent)

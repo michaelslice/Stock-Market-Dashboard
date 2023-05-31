@@ -143,6 +143,5 @@ def fetch_stock_data(stock_ticker):
         print(f"Error fetching stock data for {stock_ticker}: {str(e)}")
         return None
 
-
 def display_stock_charts(parent):
     option_window = StockChartWindow(parent)

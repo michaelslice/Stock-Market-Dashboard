@@ -99,7 +99,7 @@ from tkinter import messagebox
 class StockScreenerWindow(tk.Toplevel):
     def __init__(self, parent, stock_data):
         super().__init__(parent)
-        self.title("Option Prices")
+        self.title("Screener")
         self.stock_data = stock_data
 
         # Create a frame for the search input

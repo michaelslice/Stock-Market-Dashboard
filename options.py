@@ -413,7 +413,5 @@ class OptionWindow(tk.Toplevel):
             print("Error fetching option data:", str(e))
             return None
 
-
 def display_option_prices(parent):
     option_window = OptionWindow(parent)
-    

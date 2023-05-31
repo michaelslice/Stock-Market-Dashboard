@@ -37,35 +37,60 @@ import yfinance as yf
 from yahoo_fin import options as ops
 
 
-ticker = yf.Ticker("AAPL")
-
-option_chain = ticker.option_chain('2023-06-16').calls
-
-# Print the option quotes
-print(option_chain.head())
-
-
-
-ticker.options
-
-print(ticker.options)
-
-
-
-ops.get_calls("aapl")
-ops.get_puts("aapl")
-
-
-print(ops.get_puts("aapl"))
-
-
+from yahoo_fin import stock_info as si
+from yahoo_fin import stock_info as si
+from yahoo_fin import stock_info as si
+import yfinance as yf
 
 import yfinance as yf
 
-msft = yf.Ticker("MSFT")
+# CREATE A TICKER INSTANCE PASSING TESLA AS THE TARGET COMPANY
+tsla = yf.Ticker('TSLA')
+
+# CALL THE MULTIPLE FUNCTIONS AVAILABLE AND STORE THEM IN VARIABLES.
+actions = tsla.get_actions()
+analysis = tsla.get_analysis()
+balance = tsla.get_balance_sheet()
+calendar = tsla.get_calendar()
+cf = tsla.get_cashflow()
+info = tsla.get_info()
+inst_holders = tsla.get_institutional_holders()
+news = tsla.get_news()
+recommendations = tsla.get_recommendations()
+sustainability = tsla.get_sustainability()
+
+# PRINT THE RESULTS
+print(actions)
+print('*'*20)
+print(analysis)
+print('*'*20)
+print(balance)
+print('*'*20)
+print(calendar)
+print('*'*20)
+print(cf)
+print('*'*20)
+print(info)
+print('*'*20)
+print(inst_holders)
+print('*'*20)
+print(news)
+print('*'*20)
+print(recommendations)
+print('*'*20)
+print(sustainability)
+print('*'*20)
 
 
+# IMPORT REQUIRED LIBRARY
+import yfinance as yf
 
+# CREATE A TICKER INSTANCE FOR TESLA
+tsla = yf.Ticker('TSLA')
 
-msft.cashflow
-print(msft)
+# FETCH OPTIONS CHAIN DATA FOR THE COMPANY
+tsla_options = tsla.option_chain()
+
+# ACCESS BOTH THE CALLS AND PUTS AND STORE THEM IN THEIR RESPECTIVE VARIABLES
+tsla_puts = tsla_options.puts
+tsla_calls = tsla_options.calls
