@@ -107,56 +107,60 @@ class OptionWindow(tk.Toplevel):
         exp_date = self.exp_date_entry.get()
         strike_price = self.strike_price_entry.get()
 
+        # Validate option type
+        if option_type not in ('C', 'P'):
+            # Display an error message or handle the invalid input in your desired way
+            print("Invalid option type. Please enter 'C' for calls or 'P' for puts.")
+            return
+
         # Fetch option data using yfinance
-        option_quotes = self.get_option_quotes(search_term)
+        option_quotes = self.get_option_quotes(search_term, option_type)
 
         if option_quotes is not None:
             # Clear any previous content from the table frame
             self.tree.delete(*self.tree.get_children())
 
-            # Filter the option data based on the input values
-            filtered_quotes = []
-            for quote in option_quotes:
-                quote_option_type = quote['contractSymbol'].endswith('C') and 'C'
-                
-                if (not option_type or option_type.upper() == quote_option_type) and \
-                    (not exp_date or exp_date == quote['expiration']) and \
-                    (not strike_price or float(strike_price) == quote['strike']):
-                    filtered_quotes.append(quote)
+                    # Filter the option data based on the input values
+        filtered_quotes = []
+        for quote in option_quotes:
+            quote_option_type = quote['contractSymbol'].endswith('P') or 'C' 
+            
+            if (not option_type or option_type.upper() == quote_option_type) and \
+                (not strike_price or float(strike_price) == quote['strike']):
+                filtered_quotes.append(quote)
 
-            # Set table columns
-            columns = ["Expiration", "Type", "Strike", "Last Price", "Bid", "Ask", "Change", "% Change", "Volume", "Open Interest", "Implied Vol"]
-            self.tree["columns"] = columns
+        # Set table columns
+        columns = ["Expiration", "Type", "Strike", "Last Price", "Bid", "Ask", "Change", "% Change", "Volume", "Open Interest", "Implied Vol"]
+        self.tree["columns"] = columns
 
-            # Calculate the maximum width of the column headers
-            max_header_width = max(len(col) for col in columns)
+        # Calculate the maximum width of the column headers
+        max_header_width = max(len(col) for col in columns)
 
-            # Configure column headers and widths
-            for col in columns:
-                self.tree.heading(col, text=col)
-                self.tree.column(col, width=max_header_width * 5, stretch=0)  # Adjust the column width multiplier as needed
+        # Configure column headers and widths
+        for col in columns:
+            self.tree.heading(col, text=col)
+            self.tree.column(col, width=max_header_width * 5, stretch=0)  # Adjust the column width multiplier as needed
 
-            # Insert option quotes into the table
-            # Insert option quotes into the table
-            for quote in filtered_quotes:
-                quote_option_type = quote['contractSymbol'].endswith('C') and 'C' or 'P'
-                row_values = [
-                    quote['expiration'],
-                    quote['contractSymbol'][-9],
-                    quote['strike'],
-                    quote['lastPrice'],
-                    quote['bid'],
-                    quote['ask'],
-                    quote['change'],
-                    quote['percentChange'],
-                    quote['volume'],
-                    quote['openInterest'],
-                    quote['impliedVolatility']
-                ]
-                self.tree.insert("", "end", values=row_values)
+        # Insert option quotes into the table
+        for quote in filtered_quotes:
+            quote_option_type = quote['contractSymbol'].endswith('P') and 'P' or 'C'
+            row_values = [
+                exp_date,  # Use the user-inputted expiration date
+                quote_option_type,
+                quote['strike'],
+                quote['lastPrice'],
+                quote['bid'],
+                quote['ask'],
+                quote['change'],
+                quote['percentChange'],
+                quote['volume'],
+                quote['openInterest'],
+                quote['impliedVolatility']
+            ]
+            self.tree.insert("", "end", values=row_values)
 
     @staticmethod
-    def get_option_quotes(stock_symbol):
+    def get_option_quotes(stock_symbol, option_type):
         try:
             # Fetch option data using yfinance
             ticker = yf.Ticker(stock_symbol)
@@ -166,21 +170,27 @@ class OptionWindow(tk.Toplevel):
             for exp_date in options:
                 chain = ticker.option_chain(exp_date)
                 if chain is not None:
-                    calls = chain.calls
-                    if not calls.empty:
-                        for _, call in calls.iterrows():
+                    if option_type == 'C':
+                        options_chain = chain.calls
+                    elif option_type == 'P':
+                        options_chain = chain.puts
+                    else:
+                        continue
+
+                    if not options_chain.empty:
+                        for _, option in options_chain.iterrows():
                             # Retrieve option data and provide default values if a key is missing
-                            expiration = call.get('expiration', '')
-                            contract_symbol = call.get('contractSymbol', '')
-                            strike = call.get('strike', '')
-                            last_price = call.get('lastPrice', '')
-                            bid = call.get('bid', '')
-                            ask = call.get('ask', '')
-                            change = call.get('change', '')
-                            percent_change = call.get('percentChange', '')
-                            volume = call.get('volume', '')
-                            open_interest = call.get('openInterest', '')
-                            implied_volatility = call.get('impliedVolatility', '')
+                            expiration = option.get('expiration', '')
+                            contract_symbol = option.get('contractSymbol', '')
+                            strike = option.get('strike', '')
+                            last_price = option.get('lastPrice', '')
+                            bid = option.get('bid', '')
+                            ask = option.get('ask', '')
+                            change = option.get('change', '')
+                            percent_change = option.get('percentChange', '')
+                            volume = option.get('volume', '')
+                            open_interest = option.get('openInterest', '')
+                            implied_volatility = option.get('impliedVolatility', '')
 
                             # Append option data to the list
                             option_quotes.append({
@@ -203,11 +213,12 @@ class OptionWindow(tk.Toplevel):
             return None
 
 
+
 def display_option_prices(parent):
     option_window = OptionWindow(parent)
     
-'''
-
+    
+    '''
 import tkinter as tk
 from tkinter import ttk
 import yfinance as yf
@@ -279,7 +290,7 @@ class OptionWindow(tk.Toplevel):
 
         # Create a frame for displaying the option pricing table
         self.table_frame = ttk.Frame(self)
-        self.table_frame.grid(row=2, column=0, columnspan=4, padx=(20,20), pady=10, sticky="ew")
+        self.table_frame.grid(row=2, column=0, columnspan=4, padx=(20,10), pady=10, sticky="ew")
 
         # Create the treeview widget for displaying the option pricing table
         columns = ["Expiration", "Type", "Strike", "Last Price", "Bid", "Ask", "Change", "% Change", "Volume", "Open Interest", "Implied Vol"]
@@ -296,10 +307,10 @@ class OptionWindow(tk.Toplevel):
         self.tree.configure(yscrollcommand=tree_scrollbar.set)
 
         # Configure column headers and widths
-        header_widths = [65, 60, 60, 70, 60, 60, 60, 70, 50, 100, 100]   # Set a default width of 80 for each column
+        header_widths = [65, 60, 60, 70, 60, 60, 60, 70, 50, 100, 100, 0]   # Set a default width of 80 for each column
         for col, width in zip(columns, header_widths):
             self.tree.heading(col, text=col)
-            self.tree.column(col, width=width, anchor="center", stretch=True)  # Set stretch=False to disable column resizing
+            self.tree.column(col, width=width, anchor="center", stretch=False)  # Set stretch=False to disable column resizing
 
         # Configure grid weights to make the table frame expand with the window
         self.grid_rowconfigure(2, weight=1)
@@ -316,58 +327,60 @@ class OptionWindow(tk.Toplevel):
         exp_date = self.exp_date_entry.get()
         strike_price = self.strike_price_entry.get()
 
+        # Validate option type
+        if option_type not in ('C', 'P'):
+            # Display an error message or handle the invalid input in your desired way
+            print("Invalid option type. Please enter 'C' for calls or 'P' for puts.")
+            return
+
         # Fetch option data using yfinance
-        option_quotes = self.get_option_quotes(search_term)
+        option_quotes = self.get_option_quotes(search_term, option_type)
 
         if option_quotes is not None:
             # Clear any previous content from the table frame
             self.tree.delete(*self.tree.get_children())
 
-            # Filter the option data based on the input values
-            filtered_quotes = []
-            for quote in option_quotes:
-                quote_option_type = quote['contractSymbol'].endswith('C') and 'C'
-                
-                if (not option_type or option_type.upper() == quote_option_type) and \
-                    (not exp_date or exp_date == quote['expiration']) and \
-                    (not strike_price or float(strike_price) == quote['strike']):
-                    filtered_quotes.append(quote)
+                    # Filter the option data based on the input values
+        filtered_quotes = []
+        for quote in option_quotes:
+            quote_option_type = quote['contractSymbol'].endswith('P') or 'C' 
+            
+            if (not option_type or option_type.upper() == quote_option_type) and \
+                (not strike_price or float(strike_price) == quote['strike']):
+                filtered_quotes.append(quote)
 
-            # Set table columns
-            columns = ["Expiration", "Type", "Strike", "Last Price", "Bid", "Ask", "Change", "% Change", "Volume", "Open Interest", "Implied Vol"]
-            self.tree["columns"] = columns
+        # Set table columns
+        columns = ["Expiration", "Type", "Strike", "Last Price", "Bid", "Ask", "Change", "% Change", "Volume", "Open Interest", "Implied Vol"]
+        self.tree["columns"] = columns
 
-           # Calculate the maximum width of the column headers
-            max_header_width = max(len(col) for col in columns)
+        # Calculate the maximum width of the column headers
+        max_header_width = max(len(col) for col in columns)
 
-            # Configure column headers and widths
-            for col in columns:
-                col_width = max(len(col), max_header_width)
-                self.tree.heading(col, text=col)
-                self.tree.column(col, width=col_width * 5, stretch=0)  # Adjust the column width multiplier as needed
+        # Configure column headers and widths
+        for col in columns:
+            self.tree.heading(col, text=col)
+            self.tree.column(col, width=max_header_width * 5, stretch=0)  # Adjust the column width multiplier as needed
 
-            # Insert option quotes into the table
-            # Insert option quotes into the table
-            for quote in filtered_quotes:
-                quote_option_type = quote['contractSymbol'].endswith('C') and 'C' or 'P'
-                row_values = [
-                    quote['expiration'],
-                    quote['contractSymbol'][-9],
-                    quote['strike'],
-                    quote['lastPrice'],
-                    quote['bid'],
-                    quote['ask'],
-                    quote['change'],
-                    quote['percentChange'],
-                    quote['volume'],
-                    quote['openInterest'],
-                    round(quote['impliedVolatility'], 2)  # Round impliedVolatility to the hundredths place
-                    
-                ]
-                self.tree.insert("", "end", values=row_values)
+        # Insert option quotes into the table
+        for quote in filtered_quotes:
+            quote_option_type = quote['contractSymbol'].endswith('P') and 'P' or 'C'
+            row_values = [
+                exp_date,  # Use the user-inputted expiration date
+                quote_option_type,
+                quote['strike'],
+                quote['lastPrice'],
+                quote['bid'],
+                quote['ask'],
+                quote['change'],
+                quote['percentChange'],
+                quote['volume'],
+                quote['openInterest'],
+                quote['impliedVolatility']
+            ]
+            self.tree.insert("", "end", values=row_values)
 
     @staticmethod
-    def get_option_quotes(stock_symbol):
+    def get_option_quotes(stock_symbol, option_type):
         try:
             # Fetch option data using yfinance
             ticker = yf.Ticker(stock_symbol)
@@ -377,21 +390,27 @@ class OptionWindow(tk.Toplevel):
             for exp_date in options:
                 chain = ticker.option_chain(exp_date)
                 if chain is not None:
-                    calls = chain.calls
-                    if not calls.empty:
-                        for _, call in calls.iterrows():
+                    if option_type == 'C':
+                        options_chain = chain.calls
+                    elif option_type == 'P':
+                        options_chain = chain.puts
+                    else:
+                        continue
+
+                    if not options_chain.empty:
+                        for _, option in options_chain.iterrows():
                             # Retrieve option data and provide default values if a key is missing
-                            expiration = call.get('expiration', '')
-                            contract_symbol = call.get('contractSymbol', '')
-                            strike = call.get('strike', '')
-                            last_price = call.get('lastPrice', '')
-                            bid = call.get('bid', '')
-                            ask = call.get('ask', '')
-                            change = call.get('change', '')
-                            percent_change = call.get('percentChange', '')
-                            volume = call.get('volume', '')
-                            open_interest = call.get('openInterest', '')
-                            implied_volatility = call.get('impliedVolatility', '')
+                            expiration = option.get('expiration', '')
+                            contract_symbol = option.get('contractSymbol', '')
+                            strike = option.get('strike', '')
+                            last_price = option.get('lastPrice', '')
+                            bid = option.get('bid', '')
+                            ask = option.get('ask', '')
+                            change = option.get('change', '')
+                            percent_change = option.get('percentChange', '')
+                            volume = option.get('volume', '')
+                            open_interest = option.get('openInterest', '')
+                            implied_volatility = option.get('impliedVolatility', '')
 
                             # Append option data to the list
                             option_quotes.append({
@@ -413,5 +432,8 @@ class OptionWindow(tk.Toplevel):
             print("Error fetching option data:", str(e))
             return None
 
+
+
 def display_option_prices(parent):
     option_window = OptionWindow(parent)
+    
