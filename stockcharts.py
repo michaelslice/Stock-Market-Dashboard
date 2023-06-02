@@ -12,7 +12,6 @@ class StockChartWindow(tk.Toplevel):
         super().__init__(parent)
         self.title("Stock Charts")
 
-        # Set window size and position
         window_width = 800
         window_height = 600
         screen_width = self.winfo_screenwidth()
@@ -124,7 +123,6 @@ class StockChartWindow(tk.Toplevel):
             return filtered_data
         else:
             return data
-
 
 def fetch_stock_data(stock_ticker):
     try:

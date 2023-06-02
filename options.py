@@ -7,7 +7,7 @@ class OptionWindow(tk.Toplevel):
         super().__init__(parent)
         self.title("Option Prices")
         self.title("Option Prices")
-        self.geometry("800x400")  # Set a fixed size for the window
+        self.geometry("800x400")  
 
         self.resizable(False, False)
 

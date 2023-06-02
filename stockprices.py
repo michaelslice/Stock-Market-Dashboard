@@ -5,7 +5,7 @@ import pandas as pd
 class StockPricesWindow(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
-        self.title("Stock Prices")
+        self.title("Stock Sectors")
 
         # Create a frame to hold the buttons and the data table
         content_frame = ttk.Frame(self)
@@ -87,7 +87,6 @@ class StockPricesWindow(tk.Toplevel):
                 ))
         except Exception as e:
             print(f"Error displaying stock names: {e}")
-
 
 def display_stock_prices(parent):
     option_window = StockPricesWindow(parent)

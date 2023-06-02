@@ -26,7 +26,7 @@ class CompanyDataWindow(tk.Toplevel):
         # Bind a function to the button click event
         self.button_add_stock.config(command=self.get_stock_data)
 
-        # Create labels for 52-week high and low
+        # Create labels for 52-week high and low    
         self.high_label = ttk.Label(self, text="52-Week High: ")
         self.low_label = ttk.Label(self, text="52-Week Low: ")
         self.high_label.grid(row=0, column=1, sticky="ne")
@@ -54,11 +54,15 @@ class CompanyDataWindow(tk.Toplevel):
         self.get_stock_data()
 
     def check_input_validity(self, event):
-        symbol = self.search_entry.get()
+        symbol = self.search_entry.get().upper()  # Convert the input to uppercase
+        self.search_entry.delete(0, tk.END)  # Clear the entry field
+        self.search_entry.insert(0, symbol)  # Update the entry field with the uppercase input
+
         if symbol:
             self.button_add_stock.config(state=tk.NORMAL)
         else:
             self.button_add_stock.config(state=tk.DISABLED)
+
 
     def get_stock_data(self):
         symbol = self.search_entry.get()

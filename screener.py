@@ -83,6 +83,6 @@ class StockScreenerWindow(tk.Toplevel):
 
 def display_screener(parent):
     # Load stock data from Excel
-    stock_data = pd.read_csv('nasdaq_screener_1685462781385.csv')  # Replace 'stock_data.xlsx' with the path to your Excel file
+    stock_data = pd.read_csv('nasdaq_screener_1685462781385.csv')  
 
     option_window = StockScreenerWindow(parent, stock_data)
