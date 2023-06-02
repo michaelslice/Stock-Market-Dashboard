@@ -238,7 +238,6 @@ DB_FILE = "data.db"
 conn = sqlite3.connect(DB_FILE)
 cursor = conn.cursor()
 
-
 def display_stock_prices():
     stockprices.display_stock_prices(window)
     
@@ -259,7 +258,6 @@ def open_settings_file():
     # Open the settings file
     os.system("settings.py")  
     
-
 def add_stock():
     stocks_input = entry_stock.get().strip().upper()  # Get the input stocks
     entry_stock.delete(0, tk.END)  # Clear the entry field
@@ -327,8 +325,6 @@ def load_stocks():
 # Create the main window
 window = tk.Tk()
 window.title("Stock Tracker")
-#window.geometry("600x400")
-#window.resizable(False, False)
 
 # Create buttons
 button_stock_prices = ttk.Button(window, text="Sectors", command=display_stock_prices)

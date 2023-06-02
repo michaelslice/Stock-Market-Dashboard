@@ -99,7 +99,6 @@ class StockChartWindow(tk.Toplevel):
         for child in self.graph_frame.winfo_children():
             child.destroy()
 
-        # Create the stock graph using Matplotlib
         plt.figure(figsize=(10, 6))
         plt.plot(data['Date'], data['Close'], label='Close')
         plt.xlabel('Date')
@@ -126,12 +125,9 @@ class StockChartWindow(tk.Toplevel):
 
 def fetch_stock_data(stock_ticker):
     try:
-        # Fetch stock data using yfinance
         stock_data = yf.download(stock_ticker)
 
-        # Process the stock data (if required)
         if not stock_data.empty:
-            # Reset the index
             stock_data.reset_index(inplace=True)
             return stock_data
         else:

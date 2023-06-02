@@ -63,7 +63,6 @@ class CompanyDataWindow(tk.Toplevel):
         else:
             self.button_add_stock.config(state=tk.DISABLED)
 
-
     def get_stock_data(self):
         symbol = self.search_entry.get()
         stock = yf.Ticker(symbol)
@@ -127,7 +126,6 @@ class CompanyDataWindow(tk.Toplevel):
         # Create a label for volume data
         volume_label = ttk.Label(self, text=f"Volume (Week): {volume_week} | Volume (Month): {volume_month} | Volume (Year): {volume_year}")
         volume_label.grid(row=4, column=0, padx=10, pady=10, sticky="w")
-
 
         # Clear the existing earnings data
         self.earnings_label.config(text="")
