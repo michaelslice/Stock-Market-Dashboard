@@ -11,7 +11,8 @@ import stockcharts
 import screener
 import options
 import company
- 
+import settings
+
 DB_FILE = "data.db"
  
 # Create a connection to the SQLite database
@@ -32,6 +33,9 @@ def display_company_data():
 
 def display_option_prices():
     options.display_option_prices(window)
+
+def open_settings_window():
+    settings.open_settings_window
 
 # Function to open the settings file
 def open_settings_file():
@@ -91,8 +95,6 @@ def add_stock():
         # Reload the stocks from the database
         load_stocks()
 
-
-
 def remove_stock_details(symbol, row):
     # Remove stock name, details button, and remove button for the specified row
     for child in stock_frame.grid_slaves():
@@ -123,6 +125,7 @@ def load_stocks():
 window = tk.Tk()
 window.title("Stock Tracker")
 
+
 # Create buttons
 button_stock_prices = ttk.Button(window, text="Sectors", command=display_stock_prices)
 button_option_prices = ttk.Button(window, text="Option Prices", command=display_option_prices)
@@ -130,7 +133,7 @@ button_screener = ttk.Button(window, text="Screener", command=display_screener)
 button_company_data = ttk.Button(window, text="Company Data", command=display_company_data)
 button_stock_charts = ttk.Button(window, text="Stock Charts", command=display_stock_charts)
 button_settings = ttk.Button(window, text="!", command=open_settings_file)
-button_save = ttk.Button(window, text="*", command=open_settings_file)
+button_save = ttk.Button(window, text="*", command=open_settings_window)
 
 # Assign buttons to the same sizing group
 window.grid_columnconfigure((0, 1, 2, 3, 4), weight=1, uniform="equal")
@@ -143,6 +146,12 @@ button_company_data.grid(row=0, column=3, padx=10, pady=10, sticky="we")
 button_option_prices.grid(row=0, column=4, padx=10, pady=10, sticky="we")
 button_settings.place(relx=1.0, rely=1.0, anchor='se', x=-10, y=-10, width=30, height=30)
 button_save.place(relx=1.0, rely=1.0, anchor='se', x=-40, y=-10, width=30, height=30)
+
+# Create the ButtonFunctions instance
+button_functions = settings.ButtonFunctions(window)
+
+# Assign the open_settings_window method as the command for the "*" button
+button_save.config(command=button_functions.open_settings_window)
 
 # Create a frame to hold the input elements
 input_frame = ttk.Frame(window)
@@ -193,23 +202,17 @@ def display_historical_data(symbol):
     stock = yf.Ticker(symbol)
     historical_data = stock.history(period="max")
 
-    # Sort the historical data in reverse order based on the date
     historical_data = historical_data.sort_index(ascending=False)
 
-    # Create a Frame to hold the Treeview widget and add padding
     frame = ttk.Frame(historical_window, padding=(10, 0, 10, 0))
     frame.pack(fill=tk.BOTH, expand=True)
 
-    # Create a Treeview widget to display the historical data
     tree = ttk.Treeview(frame)
-    tree.pack(fill=tk.BOTH, *
-    expand=True, padx=10)  
+    tree.pack(fill=tk.BOTH, expand=True, padx=10)  
 
-    # Configure the columns
     tree["columns"] = ("Date", "Open", "High", "Low", "Close", "Volume")
     tree.column("#0", width=0, stretch=tk.NO)  
 
-    # Set column headings
     tree.heading("Date", text="Date")
     tree.heading("Open", text="Open")
     tree.heading("High", text="High")
@@ -217,7 +220,6 @@ def display_historical_data(symbol):
     tree.heading("Close", text="Close")
     tree.heading("Volume", text="Volume")
 
-    # Add historical data to the treeview
     for row in historical_data.itertuples():
         date = row.Index.strftime("%m/%d/%Y")  
         values = row[1:]
@@ -225,7 +227,6 @@ def display_historical_data(symbol):
         rounded_values = [round(value, 2) if isinstance(value, (int, float)) else value for value in values[:4]]
         tree.insert("", tk.END, values=(date,) + tuple(rounded_values) + values[4:])
 
-    # Add a scrollbar to the treeview
     scrollbar = ttk.Scrollbar(historical_window, orient=tk.VERTICAL, command=tree.yview)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
     tree.configure(yscrollcommand=scrollbar.set)
@@ -380,6 +381,12 @@ button_company_data.grid(row=0, column=3, padx=10, pady=10, sticky="we")
 button_option_prices.grid(row=0, column=4, padx=10, pady=10, sticky="we")
 button_settings.place(relx=1.0, rely=1.0, anchor='se', x=-10, y=-10, width=30, height=30)
 button_save.place(relx=1.0, rely=1.0, anchor='se', x=-40, y=-10, width=30, height=30)
+
+# Create the ButtonFunctions instance
+button_functions = settings.ButtonFunctions(window)
+
+# Assign the open_settings_window method as the command for the "*" button
+button_save.config(command=button_functions.open_settings_window)
 
 # Create a frame to hold the input elements
 input_frame = ttk.Frame(window)
