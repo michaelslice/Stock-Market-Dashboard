@@ -18,7 +18,6 @@ DB_FILE = "data.db"
 conn = sqlite3.connect(DB_FILE)
 cursor = conn.cursor()
 
-
 def display_stock_prices():
     stockprices.display_stock_prices(window)
     
@@ -36,10 +35,21 @@ def display_option_prices():
 
 # Function to open the settings file
 def open_settings_file():
-    # Open the settings file
-    os.system("settings.py")  
-    
+    # Reset the database
+    cursor.execute("DROP TABLE IF EXISTS stocks")
+    cursor.execute("CREATE TABLE stocks (symbol TEXT)")
 
+    # Clear the displayed stocks on the screen
+    for child in stock_frame.grid_slaves():
+        child.grid_forget()
+
+    # Reload the stocks from the database (which will be empty after reset)
+    load_stocks()
+
+    # Show a message box to indicate successful reset
+    messagebox.showinfo("Reset", "The database and displayed stocks have been reset.")
+ 
+    
 def add_stock():
     stocks_input = entry_stock.get().strip().upper()  # Get the input stocks
     entry_stock.delete(0, tk.END)  # Clear the entry field
@@ -50,7 +60,11 @@ def add_stock():
         for symbol in stocks_list:
             symbol = symbol[:4]  # Limit to maximum 4 characters
 
-            if symbol in [child.cget("text") for child in stock_frame.winfo_children() if isinstance(child, ttk.Label)]:
+            # Check if the stock symbol is already present in the database
+            cursor.execute("SELECT symbol FROM stocks WHERE symbol=?", (symbol,))
+            existing_stock = cursor.fetchone()
+
+            if existing_stock:
                 continue  # Skip adding repeated stocks
 
             # Check if the stock symbol is valid
@@ -76,6 +90,7 @@ def add_stock():
 
         # Reload the stocks from the database
         load_stocks()
+
 
 
 def remove_stock_details(symbol, row):
@@ -107,8 +122,6 @@ def load_stocks():
 # Create the main window
 window = tk.Tk()
 window.title("Stock Tracker")
-window.geometry("600x400")
-window.resizable(False, False)
 
 # Create buttons
 button_stock_prices = ttk.Button(window, text="Sectors", command=display_stock_prices)
@@ -189,7 +202,8 @@ def display_historical_data(symbol):
 
     # Create a Treeview widget to display the historical data
     tree = ttk.Treeview(frame)
-    tree.pack(fill=tk.BOTH, expand=True, padx=10)  
+    tree.pack(fill=tk.BOTH, *
+    expand=True, padx=10)  
 
     # Configure the columns
     tree["columns"] = ("Date", "Open", "High", "Low", "Close", "Volume")
@@ -231,7 +245,8 @@ import stockcharts
 import screener
 import options
 import company
- 
+import settings
+
 DB_FILE = "data.db"
  
 # Create a connection to the SQLite database
@@ -253,10 +268,25 @@ def display_company_data():
 def display_option_prices():
     options.display_option_prices(window)
 
+def open_settings_window():
+    settings.open_settings_window
+
 # Function to open the settings file
 def open_settings_file():
-    # Open the settings file
-    os.system("settings.py")  
+    # Reset the database
+    cursor.execute("DROP TABLE IF EXISTS stocks")
+    cursor.execute("CREATE TABLE stocks (symbol TEXT)")
+
+    # Clear the displayed stocks on the screen
+    for child in stock_frame.grid_slaves():
+        child.grid_forget()
+
+    # Reload the stocks from the database (which will be empty after reset)
+    load_stocks()
+
+    # Show a message box to indicate successful reset
+    messagebox.showinfo("Reset", "The database and displayed stocks have been reset.")
+ 
     
 def add_stock():
     stocks_input = entry_stock.get().strip().upper()  # Get the input stocks
@@ -268,7 +298,11 @@ def add_stock():
         for symbol in stocks_list:
             symbol = symbol[:4]  # Limit to maximum 4 characters
 
-            if symbol in [child.cget("text") for child in stock_frame.winfo_children() if isinstance(child, ttk.Label)]:
+            # Check if the stock symbol is already present in the database
+            cursor.execute("SELECT symbol FROM stocks WHERE symbol=?", (symbol,))
+            existing_stock = cursor.fetchone()
+
+            if existing_stock:
                 continue  # Skip adding repeated stocks
 
             # Check if the stock symbol is valid
@@ -294,7 +328,6 @@ def add_stock():
 
         # Reload the stocks from the database
         load_stocks()
-
 
 def remove_stock_details(symbol, row):
     # Remove stock name, details button, and remove button for the specified row
@@ -326,6 +359,7 @@ def load_stocks():
 window = tk.Tk()
 window.title("Stock Tracker")
 
+
 # Create buttons
 button_stock_prices = ttk.Button(window, text="Sectors", command=display_stock_prices)
 button_option_prices = ttk.Button(window, text="Option Prices", command=display_option_prices)
@@ -333,7 +367,7 @@ button_screener = ttk.Button(window, text="Screener", command=display_screener)
 button_company_data = ttk.Button(window, text="Company Data", command=display_company_data)
 button_stock_charts = ttk.Button(window, text="Stock Charts", command=display_stock_charts)
 button_settings = ttk.Button(window, text="!", command=open_settings_file)
-button_save = ttk.Button(window, text="*", command=open_settings_file)
+button_save = ttk.Button(window, text="*", command=open_settings_window)
 
 # Assign buttons to the same sizing group
 window.grid_columnconfigure((0, 1, 2, 3, 4), weight=1, uniform="equal")
@@ -396,22 +430,17 @@ def display_historical_data(symbol):
     stock = yf.Ticker(symbol)
     historical_data = stock.history(period="max")
 
-    # Sort the historical data in reverse order based on the date
     historical_data = historical_data.sort_index(ascending=False)
 
-    # Create a Frame to hold the Treeview widget and add padding
     frame = ttk.Frame(historical_window, padding=(10, 0, 10, 0))
     frame.pack(fill=tk.BOTH, expand=True)
 
-    # Create a Treeview widget to display the historical data
     tree = ttk.Treeview(frame)
     tree.pack(fill=tk.BOTH, expand=True, padx=10)  
 
-    # Configure the columns
     tree["columns"] = ("Date", "Open", "High", "Low", "Close", "Volume")
     tree.column("#0", width=0, stretch=tk.NO)  
 
-    # Set column headings
     tree.heading("Date", text="Date")
     tree.heading("Open", text="Open")
     tree.heading("High", text="High")
@@ -419,7 +448,6 @@ def display_historical_data(symbol):
     tree.heading("Close", text="Close")
     tree.heading("Volume", text="Volume")
 
-    # Add historical data to the treeview
     for row in historical_data.itertuples():
         date = row.Index.strftime("%m/%d/%Y")  
         values = row[1:]
@@ -427,7 +455,6 @@ def display_historical_data(symbol):
         rounded_values = [round(value, 2) if isinstance(value, (int, float)) else value for value in values[:4]]
         tree.insert("", tk.END, values=(date,) + tuple(rounded_values) + values[4:])
 
-    # Add a scrollbar to the treeview
     scrollbar = ttk.Scrollbar(historical_window, orient=tk.VERTICAL, command=tree.yview)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
     tree.configure(yscrollcommand=scrollbar.set)

@@ -6,7 +6,6 @@ class OptionWindow(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.title("Option Prices")
-        self.title("Option Prices")
         self.geometry("800x400")  
 
         self.resizable(False, False)
