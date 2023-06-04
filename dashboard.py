@@ -1,4 +1,3 @@
-#OK CODE 
 
 import tkinter as tk    
 from tkinter import ttk
@@ -40,6 +39,7 @@ def open_settings_window():
 # Create the main window
 window = tk.Tk()
 window.title("Stock Tracker")
+window.geometry("585x300")
 
 def open_settings_file():
     # Reset the database
@@ -83,13 +83,13 @@ def add_stock():
                 row_index = len(stock_frame.grid_slaves()) // 3
 
                 stock_name_label = ttk.Label(stock_frame, text=symbol)
-                stock_name_label.grid(row=row_index, column=1, pady=5, sticky="w")  # Place in column 1
+                stock_name_label.grid(row=row_index, column=2, pady=5, sticky="w")  # Place in column 1
 
                 remove_button = ttk.Button(stock_frame, text="Remove", command=lambda sym=symbol, row=row_index: remove_stock_details(sym, row_index))
-                remove_button.grid(row=row_index, column=2, padx=5)
+                remove_button.grid(row=row_index, column=3, padx=5)
 
                 details_button = ttk.Button(stock_frame, text="Details", command=lambda sym=symbol: display_historical_data(sym))
-                details_button.grid(row=row_index, column=3, padx=5)
+                details_button.grid(row=row_index, column=4, padx=5)
 
                 # Insert the stock symbol into the database
                 cursor.execute("INSERT INTO stocks (symbol) VALUES (?)", (symbol,))
@@ -137,40 +137,46 @@ def load_stocks():
 
         displayed_stocks.add(symbol)  # Add the stock to the displayed stocks set
 
-# Create buttons
-# Create buttons with a fixed width
-button_stock_prices = ttk.Button(window, text="Sectors", command=display_stock_prices, width=15)
-button_option_prices = ttk.Button(window, text="Option Prices", command=display_option_prices, width=15)
-button_screener = ttk.Button(window, text="Screener", command=display_screener, width=15)
-button_company_data = ttk.Button(window, text="Company Data", command=display_company_data, width=15)
-button_stock_charts = ttk.Button(window, text="Stock Charts", command=display_stock_charts, width=15)
 
+
+
+
+
+
+
+
+# Create buttons
+button_stock_prices = ttk.Button(window, text="Sectors", command=display_stock_prices)
+button_option_prices = ttk.Button(window, text="Option Prices", command=display_option_prices)
+button_screener = ttk.Button(window, text="Screener", command=display_screener)
+button_company_data = ttk.Button(window, text="Company Data", command=display_company_data)
+button_stock_charts = ttk.Button(window, text="Stock Charts", command=display_stock_charts)
 button_settings = ttk.Button(window, text="!", command=open_settings_file)
 button_save = ttk.Button(window, text="*", command=open_settings_window)
 
-# Configure the row to have equal weights for all elements
-# Assign buttons to the same sizing group
-#window.grid_columnconfigure((0, 1, 2, 3, 4), weight=0, uniform="equal")
-
-# Place buttons in the window using grid layout
-button_stock_prices.grid(row=0, column=0, padx=10, pady=10, sticky="we")
-button_screener.grid(row=0, column=1, padx=10, pady=10, sticky="we")
-button_stock_charts.grid(row=0, column=2, padx=10, pady=10, sticky="we")
-button_company_data.grid(row=0, column=3, padx=10, pady=10, sticky="we")
-button_option_prices.grid(row=0, column=4, padx=10, pady=10, sticky="we")
+# Configure the first row to have equal weights for all elements
+window.grid_rowconfigure(0, weight=1)
+# Place buttons at the top with reduced spacing
+button_stock_prices.place(relx=0.0, rely=0.1, anchor="w", width=100,  x=10, height=30, )
+button_screener.place(relx=0.0, rely=0.1, anchor="w", width=100, height=30, x=120)
+button_stock_charts.place(relx=0.0, rely=0.1, anchor="w", width=100, height=30, x=240)
+button_company_data.place(relx=0.0, rely=0.1, anchor="w", width=100, height=30, x=360)
+button_option_prices.place(relx=0.0, rely=0.1, anchor="w", width=100, height=30, x=480)
 button_settings.place(relx=1.0, rely=1.0, anchor='se', x=-10, y=-10, width=30, height=30)
 button_save.place(relx=1.0, rely=1.0, anchor='se', x=-40, y=-10, width=30, height=30)
 
-window.grid_rowconfigure(0, weight=1)
+
 # Create the ButtonFunctions instance
 button_functions = settings.ButtonFunctions(window)
 
 # Assign the open_settings_window method as the command for the "*" button
 button_save.config(command=button_functions.open_settings_window)
 
+
+
 # Create a frame to hold the input elements
 input_frame = ttk.Frame(window)
-input_frame.grid(row=1, column=0, padx=10, pady=10, sticky="w")
+input_frame.place(relx=0.0, rely=0.2, anchor="w", x=10, y=50)
 input_frame.grid_propagate(False)
 # Create a StringVar variable for the entry field
 entry_var = tk.StringVar()
