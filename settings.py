@@ -9,7 +9,7 @@ class ButtonFunctions:
         settings_window = tk.Toplevel(self.parent_window)
         settings_window.title("Settings")
 
-        label_title = ttk.Label(settings_window, text="Email controls")
+        label_title = ttk.Label(settings_window, text="Email Controls")
         label_title.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
 
         frame_content = ttk.Frame(settings_window)
@@ -26,12 +26,14 @@ class ButtonFunctions:
             entry = ttk.Entry(frame_content)
             entry.grid(row=i, column=1, padx=(10, 0), pady=5, sticky=tk.W+tk.E)
 
-        button = ttk.Button(settings_window, text="Close", command=settings_window.destroy)
-        button.grid(row=10, column=0, padx=10, pady=10, sticky=tk.W)
+        # Create the Save button
+        save_button = ttk.Button(settings_window, text="Save", command=self.save_settings)
+        save_button.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
 
-def open_settings_window(parent):
-    button_functions = ButtonFunctions(parent)
-    button_functions.open_settings_window()
+    def save_settings(self):
+    
+        pass
+
 
 
 

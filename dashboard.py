@@ -1,7 +1,8 @@
+#OK CODE 
+
 import tkinter as tk    
 from tkinter import ttk
 import yfinance as yf
-import os
 from tkinter import messagebox
 import sqlite3
 
@@ -36,7 +37,10 @@ def display_option_prices():
 def open_settings_window():
     settings.open_settings_window
 
-# Function to open the settings file
+# Create the main window
+window = tk.Tk()
+window.title("Stock Tracker")
+
 def open_settings_file():
     # Reset the database
     cursor.execute("DROP TABLE IF EXISTS stocks")
@@ -75,16 +79,17 @@ def add_stock():
                     messagebox.showerror("Error", "Invalid stock symbol: " + symbol)
                     continue
 
-                row_index = len(stock_frame.grid_slaves())  # Get the row index for the new entry
+                # Find the last row index in the stock_frame
+                row_index = len(stock_frame.grid_slaves()) // 3
 
                 stock_name_label = ttk.Label(stock_frame, text=symbol)
-                stock_name_label.grid(row=row_index, column=0, padx=5)
+                stock_name_label.grid(row=row_index, column=1, pady=5, sticky="w")  # Place in column 1
 
                 remove_button = ttk.Button(stock_frame, text="Remove", command=lambda sym=symbol, row=row_index: remove_stock_details(sym, row_index))
-                remove_button.grid(row=row_index, column=1, padx=5)
+                remove_button.grid(row=row_index, column=2, padx=5)
 
                 details_button = ttk.Button(stock_frame, text="Details", command=lambda sym=symbol: display_historical_data(sym))
-                details_button.grid(row=row_index, column=2, padx=5)
+                details_button.grid(row=row_index, column=3, padx=5)
 
                 # Insert the stock symbol into the database
                 cursor.execute("INSERT INTO stocks (symbol) VALUES (?)", (symbol,))
@@ -92,8 +97,6 @@ def add_stock():
 
         # Reload the stocks from the database
         load_stocks()
-
-
 
 def remove_stock_details(symbol, row):
     # Remove stock name, details button, and remove button for the specified row
@@ -124,34 +127,30 @@ def load_stocks():
             continue
 
         stock_name_label = ttk.Label(stock_frame, text=symbol)
-        stock_name_label.grid(row=row_index, column=0, padx=5)
+        stock_name_label.grid(row=row_index, column=0, padx=(40,0))  # Place in column 0
 
         remove_button = ttk.Button(stock_frame, text="Remove", command=lambda sym=symbol, row=row_index: remove_stock_details(sym, row_index))
-        remove_button.grid(row=row_index, column=1, padx=5)
+        remove_button.grid(row=row_index, column=1, padx=(30,0))
 
         details_button = ttk.Button(stock_frame, text="Details", command=lambda sym=symbol: display_historical_data(sym))
         details_button.grid(row=row_index, column=2, padx=5)
 
         displayed_stocks.add(symbol)  # Add the stock to the displayed stocks set
 
-
-
-# Create the main window
-window = tk.Tk()
-window.title("Stock Tracker")
-
-
 # Create buttons
-button_stock_prices = ttk.Button(window, text="Sectors", command=display_stock_prices)
-button_option_prices = ttk.Button(window, text="Option Prices", command=display_option_prices)
-button_screener = ttk.Button(window, text="Screener", command=display_screener)
-button_company_data = ttk.Button(window, text="Company Data", command=display_company_data)
-button_stock_charts = ttk.Button(window, text="Stock Charts", command=display_stock_charts)
+# Create buttons with a fixed width
+button_stock_prices = ttk.Button(window, text="Sectors", command=display_stock_prices, width=15)
+button_option_prices = ttk.Button(window, text="Option Prices", command=display_option_prices, width=15)
+button_screener = ttk.Button(window, text="Screener", command=display_screener, width=15)
+button_company_data = ttk.Button(window, text="Company Data", command=display_company_data, width=15)
+button_stock_charts = ttk.Button(window, text="Stock Charts", command=display_stock_charts, width=15)
+
 button_settings = ttk.Button(window, text="!", command=open_settings_file)
 button_save = ttk.Button(window, text="*", command=open_settings_window)
 
+# Configure the row to have equal weights for all elements
 # Assign buttons to the same sizing group
-window.grid_columnconfigure((0, 1, 2, 3, 4), weight=1, uniform="equal")
+#window.grid_columnconfigure((0, 1, 2, 3, 4), weight=0, uniform="equal")
 
 # Place buttons in the window using grid layout
 button_stock_prices.grid(row=0, column=0, padx=10, pady=10, sticky="we")
@@ -162,6 +161,7 @@ button_option_prices.grid(row=0, column=4, padx=10, pady=10, sticky="we")
 button_settings.place(relx=1.0, rely=1.0, anchor='se', x=-10, y=-10, width=30, height=30)
 button_save.place(relx=1.0, rely=1.0, anchor='se', x=-40, y=-10, width=30, height=30)
 
+window.grid_rowconfigure(0, weight=1)
 # Create the ButtonFunctions instance
 button_functions = settings.ButtonFunctions(window)
 
@@ -171,7 +171,7 @@ button_save.config(command=button_functions.open_settings_window)
 # Create a frame to hold the input elements
 input_frame = ttk.Frame(window)
 input_frame.grid(row=1, column=0, padx=10, pady=10, sticky="w")
-
+input_frame.grid_propagate(False)
 # Create a StringVar variable for the entry field
 entry_var = tk.StringVar()
 
