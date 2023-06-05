@@ -1,4 +1,3 @@
-
 import tkinter as tk    
 from tkinter import ttk
 import yfinance as yf
@@ -56,7 +55,6 @@ def open_settings_file():
     # Show a message box to indicate successful reset
     messagebox.showinfo("Reset", "The database and displayed stocks have been reset.")
  
-    
 def add_stock():
     stocks_input = entry_stock.get().strip().upper()  # Get the input stocks
     entry_stock.delete(0, tk.END)  # Clear the entry field
@@ -137,14 +135,6 @@ def load_stocks():
 
         displayed_stocks.add(symbol)  # Add the stock to the displayed stocks set
 
-
-
-
-
-
-
-
-
 # Create buttons
 button_stock_prices = ttk.Button(window, text="Sectors", command=display_stock_prices)
 button_option_prices = ttk.Button(window, text="Option Prices", command=display_option_prices)
@@ -156,23 +146,22 @@ button_save = ttk.Button(window, text="*", command=open_settings_window)
 
 # Configure the first row to have equal weights for all elements
 window.grid_rowconfigure(0, weight=1)
+window.grid_rowconfigure(1, weight=1)
+
 # Place buttons at the top with reduced spacing
-button_stock_prices.place(relx=0.0, rely=0.1, anchor="w", width=100,  x=10, height=30, )
-button_screener.place(relx=0.0, rely=0.1, anchor="w", width=100, height=30, x=120)
+button_stock_prices.place(relx=0.0, rely=0.1, anchor="w", width=100,  x=20, height=30, )
+button_screener.place(relx=0.0, rely=0.1, anchor="w", width=100, height=30, x=130)
 button_stock_charts.place(relx=0.0, rely=0.1, anchor="w", width=100, height=30, x=240)
-button_company_data.place(relx=0.0, rely=0.1, anchor="w", width=100, height=30, x=360)
-button_option_prices.place(relx=0.0, rely=0.1, anchor="w", width=100, height=30, x=480)
+button_company_data.place(relx=0.0, rely=0.1, anchor="w", width=100, height=30, x=350)
+button_option_prices.place(relx=0.0, rely=0.1, anchor="w", width=100, height=30, x=460)
 button_settings.place(relx=1.0, rely=1.0, anchor='se', x=-10, y=-10, width=30, height=30)
 button_save.place(relx=1.0, rely=1.0, anchor='se', x=-40, y=-10, width=30, height=30)
-
 
 # Create the ButtonFunctions instance
 button_functions = settings.ButtonFunctions(window)
 
 # Assign the open_settings_window method as the command for the "*" button
 button_save.config(command=button_functions.open_settings_window)
-
-
 
 # Create a frame to hold the input elements
 input_frame = ttk.Frame(window)
