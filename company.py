@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 import yfinance as yf
-from yahoo_fin import stock_info as si
 
 class CompanyDataWindow(tk.Toplevel):
     def __init__(self, parent):
@@ -129,24 +128,6 @@ class CompanyDataWindow(tk.Toplevel):
 
         # Clear the existing earnings data
         self.earnings_label.config(text="")
-
-        # Fetch earnings data using yahoo_fin
-        earnings = si.get_earnings(symbol)
-        if earnings.empty:
-            self.earnings_label.config(text="No earnings data available.")
-        else:
-            earnings_data = "Earnings Dates: "
-            for date in earnings.tail(3)['startdatetime']:
-                formatted_date = date.strftime("%Y/%m/%d")
-                earnings_info = f"{formatted_date} | "
-                earnings_data += earnings_info
-
-            # Remove the last "| " from the earnings_data
-            earnings_data = earnings_data.rstrip("| ")
-
-            # Create a label for earnings data
-            earnings_label = ttk.Label(self, text=earnings_data)
-            earnings_label.grid(row=4, column=0, padx=10, pady=10, sticky="w")
 
 def display_company_data(parent):
     option_window = CompanyDataWindow(parent)
