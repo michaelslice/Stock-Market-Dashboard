@@ -16,10 +16,10 @@ class ButtonFunctions:
 
         labels = ["Email Controls",
                   "From Address:",
-                  "Password location:",
-                  "Email frequency (minutes):",
-                  "Email start time (hours):",
-                  "Email end time (hours):",
+                  "Password Location:",
+                  "Email frequency (Minutes):",
+                  "Email Start Time (Hours):",
+                  "Email End Time (Hours):",
                   "Email Alerts",
                   "Upswing Threshold (%):",
                   "Price Target:"]
