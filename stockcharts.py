@@ -80,7 +80,7 @@ class StockChartWindow(tk.Toplevel):
     def perform_filter(self):
         # Get the stock ticker from the input box
         stock_ticker = self.entry_var.get()
-                # Get the begin date from the input box
+        # Get the begin date from the input box
         begin_date = self.begin_entry_var.get()
         # Get the end date from the input box
         end_date = self.end_entry_var.get()
@@ -109,7 +109,7 @@ class StockChartWindow(tk.Toplevel):
         # Enable cursor highlighting with data values
         mplcursors.cursor(hover=True)
 
-        # Embed the Matplotlib graph into the graph frame
+       
         canvas = FigureCanvasTkAgg(plt.gcf(), master=self.graph_frame)
         canvas.draw()
         canvas.get_tk_widget().pack(expand=True, fill="both")

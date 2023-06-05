@@ -54,7 +54,7 @@ class CompanyDataWindow(tk.Toplevel):
         self.get_stock_data()
 
     def check_input_validity(self, event):
-        symbol = self.search_entry.get().upper()  # Convert the input to uppercase
+        symbol = self.search_entry.get().upper()  
         self.search_entry.delete(0, tk.END)  # Clear the entry field
         self.search_entry.insert(0, symbol)  # Update the entry field with the uppercase input
 
@@ -118,7 +118,7 @@ class CompanyDataWindow(tk.Toplevel):
             splits_label = ttk.Label(self, text=splits_data)
             splits_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
 
-            # Fetch volume data for the user-inputted stock
+        # Fetch volume data for the user-inputted stock
         volume_week = info.get('averageVolume10days', 'N/A')
         volume_month = info.get('averageVolume', 'N/A')
         volume_year = info.get('averageVolume10days', 'N/A')

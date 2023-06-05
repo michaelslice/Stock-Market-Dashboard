@@ -13,7 +13,6 @@ import settings
 
 DB_FILE = "data.db"
  
-# Create a connection to the SQLite database
 conn = sqlite3.connect(DB_FILE)
 cursor = conn.cursor()
 

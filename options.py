@@ -7,7 +7,6 @@ class OptionWindow(tk.Toplevel):
         super().__init__(parent)
         self.title("Option Prices")
         self.geometry("800x400")  
-
         self.resizable(False, False)
 
         # Create a frame for the search input
