@@ -79,7 +79,7 @@ To activate email notifications fill in the 'From Address' and 'To Address' fiel
 
 ## Instructions
 
-Insure that Python 3 and all packages are installe. 
+Insure that Python 3 and all packages are installed.
 
 Run dashboard.py
 
