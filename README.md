@@ -61,7 +61,7 @@ To view the Stock Charts feature click the 'Stock Charts' button located at the 
 
 ## Company Data
 
-The Company Data can be accessed by clicking the 'Company Data' button. After clicking the 'Company Data' button a new window will appear, in the top right corner of the screen the user can input a stock ticker. After the stock ticker is inputted click the 'Add Stock' button and in the top right corner of the screen data for the 52-Week High, and 52-Week Low for the inputted will be displayed. Additionally data for recent dividends, stock splits, and volume will appear.
+The Company Data can be accessed by clicking the 'Company Data' button. After clicking the 'Company Data' button a new window will appear, in the top right corner of the screen the user can input a stock ticker. After the stock ticker is inputted click the 'Add Stock' button and in the top right corner of the screen data for the 52-Week High, and 52-Week Low for the inputted will be displayed. Additionally, data for recent dividends, stock splits, and volume will appear.
 
 ![Company_Data](https://github.com/michaelslice/Stock-Market-Dashboard/assets/110714088/5b8c75e6-345c-45d7-be7a-9c71c24f032e)
 
